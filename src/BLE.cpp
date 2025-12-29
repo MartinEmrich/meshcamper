@@ -12,7 +12,7 @@ namespace espjoker
 
   TaskHandle_t task_handle;
 
-  ESPJokerBLEClient::ESPJokerBLEClient()
+  ESPJokerBLEClient::ESPJokerBLEClient(BatteryStatus *b) : battery_status(b)
   {
     BLEDevice::init("esp-joker");
   }
@@ -60,7 +60,7 @@ namespace espjoker
     }
     if (device == NULL)
     {
-      //LOG_DEBUG("Ignoring unknown device %s\n", advertisedDevice->getAddress().toString().c_str());
+      // LOG_DEBUG("Ignoring unknown device %s\n", advertisedDevice->getAddress().toString().c_str());
       return;
     }
 
@@ -91,7 +91,8 @@ namespace espjoker
       case VICTRON_DEVICE_CLASS_BATTERYMONITOR:
       {
         VictronBatteryMonitorData *data = static_cast<VictronBatteryMonitor *>(device)->parse_data(raw_data);
-
+        battery_status->update(data);
+#ifdef DEBUG_DECODE        
         LOG_DEBUG("Model: 0x%04x, Readout type 0x%02x\n", data->get_model_id(), data->get_readout_type());
 
         std::string d = data->get_decrypted();
@@ -107,7 +108,9 @@ namespace espjoker
                   data->current,
                   data->soc);
 
+          
         LOG_DEBUG("\n");
+#endif
         delete (data);
       }
       break;

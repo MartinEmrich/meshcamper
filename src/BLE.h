@@ -7,8 +7,10 @@
 #include "NimBLEAddress.h"
 
 #include "Arduino.h"
+
 #include "Logging.h"
 
+#include "BatteryStatus.h"
 #include "victron/devices/VictronBatteryMonitor.h"
 
 namespace espjoker
@@ -32,6 +34,8 @@ namespace espjoker
 
   private:
     std::list<VictronDevice*> devices;
+
+    BatteryStatus* battery_status;
     
     NimBLEScan *scanner;
 
@@ -42,7 +46,7 @@ namespace espjoker
     void handle_victron_instant_readout(VictronDevice* device, const std::string &raw_data);
 
   public:
-    ESPJokerBLEClient();
+    ESPJokerBLEClient(BatteryStatus* b);
 
     /* start FreeRTOS BLE Scanner thread. should never return.*/
     void start();

@@ -8,10 +8,13 @@
 
 espjoker::ESPJokerBLEClient *ble;
 
+espjoker::BatteryStatus* battery_status;
+
 void setup()
 {
   Serial.begin(115200);
-  ble = new espjoker::ESPJokerBLEClient();
+  battery_status = new espjoker::BatteryStatus();
+  ble = new espjoker::ESPJokerBLEClient(battery_status);
 
   ble->addVictronDevice(new VictronBatteryMonitor(VICTRON_BMV_BLE_MAC, VICTRON_BMV_INSTANT_READOUT_KEY));
 
@@ -21,5 +24,6 @@ void setup()
 void loop()
 {
   Serial.println("still alive!\n");
-  delay(30000);
+  Serial.println(battery_status->get_as_short_string().c_str());
+  delay(10000);
 }
