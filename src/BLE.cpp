@@ -22,7 +22,10 @@ namespace espjoker
     scanner = BLEDevice::getScan();
 
     scanner->setScanCallbacks(this);
-    scanner->setActiveScan(true);
+
+    // seems to be sufficient for Victron BLE devices
+    scanner->setActiveScan(false);
+    
     scanner->setInterval(500);
     scanner->setWindow(490);
 

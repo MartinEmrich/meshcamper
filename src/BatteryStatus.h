@@ -34,6 +34,8 @@ namespace espjoker
 
         std::string get_as_short_string() const;
 
+        const bool is_ready() const;
+
         virtual ~BatteryStatus();
     };
 }
