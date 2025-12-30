@@ -23,10 +23,15 @@ namespace espjoker
     {
         xSemaphoreTake(battery_status_lock, portMAX_DELAY);
         char buf[100] = {0};
-        snprintf(buf, 100, "B:%2.2fV:%.1f%%,S:%2.2fV,P:%.1fW(t-%.1fs)", 
-            battery_voltage, soc, starter_voltage, power, (esp_timer_get_time() - update_timestamp) / 1000000.0f);
+        snprintf(buf, 100, "B:%2.2fV:%.1f%%,S:%2.2fV,P:%.1fW(t-%.1fs)",
+                 battery_voltage, soc, starter_voltage, power, (esp_timer_get_time() - update_timestamp) / 1000000.0f);
         xSemaphoreGive(battery_status_lock);
         return std::string(buf);
+    }
+
+    const bool BatteryStatus::is_ready() const
+    {
+        return (battery_voltage != 0.0f || starter_voltage != 0.0f);
     }
 
     BatteryStatus::~BatteryStatus()

@@ -9,14 +9,6 @@ VictronData::VictronData()
 VictronData::VictronData(const std::string &raw_data)
 {
     const char *raw_data_c = raw_data.c_str();
-
-    LOG_DEBUG("raw: ");
-    for (auto &&c : raw_data)
-    {
-        LOG_DEBUG("%02x ", c);
-    }
-    LOG_DEBUG("\n");
-
     prefix = (raw_data_c[1] << 8) + raw_data_c[0];
     model_id = (raw_data_c[3] << 8) + raw_data_c[2];
     readout_type = raw_data_c[4];

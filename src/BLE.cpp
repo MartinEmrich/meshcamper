@@ -10,7 +10,7 @@ namespace espjoker
     }
   }
 
-  TaskHandle_t task_handle;
+  TaskHandle_t ble_task_handle;
 
   ESPJokerBLEClient::ESPJokerBLEClient(BatteryStatus *b) : battery_status(b)
   {
@@ -27,7 +27,7 @@ namespace espjoker
     scanner->setWindow(490);
 
     LOG_INFO("Looking for %d devices...", devices.size());
-    xTaskCreate(espjoker_ble_task, "BLE Task", 2048, this, 1, &task_handle);
+    xTaskCreate(espjoker_ble_task, "BLE Task", 2048, this, 1, &ble_task_handle);
     LOG_INFO("Task created.\n");
   }
 
@@ -38,13 +38,11 @@ namespace espjoker
 
   void ESPJokerBLEClient::task()
   {
-    LOG_INFO("BLE Task started");
+    LOG_INFO("BLE Task started\n");
     while (true)
     {
-      LOG_INFO("Task loop start.\n");
       bool rv = scanner->start(1000, false);
-      LOG_INFO("BLE Scan complete, result was %s\n", rv ? "true" : "false");
-      LOG_DEBUG("Task mem watermark: %d bytes. Scanning again in 5s\n", uxTaskGetStackHighWaterMark(task_handle));
+      LOG_DEBUG("Task mem watermark: %d bytes. Scanning again in 5s\n", uxTaskGetStackHighWaterMark(ble_task_handle));
       delay(5000);
     }
     vTaskDelete(NULL);
@@ -60,24 +58,22 @@ namespace espjoker
     }
     if (device == NULL)
     {
-      // LOG_DEBUG("Ignoring unknown device %s\n", advertisedDevice->getAddress().toString().c_str());
       return;
     }
-
-    LOG_INFO("Got Victron Device by MAC: %s\n", advertisedDevice->getAddress().toString().c_str());
 
     std::string manufacturer_data = advertisedDevice->getManufacturerData();
     if (manufacturer_data.size() < 2 || manufacturer_data[0] != 0xe1 || manufacturer_data[1] != 0x02)
     {
-      LOG_DEBUG("Skipping non-Victron manufaturer data\n");
+      // LOG_DEBUG("Skipping non-Victron manufaturer data\n");
       return;
     }
 
     if (manufacturer_data[2] != 0x10)
-    {
-      LOG_DEBUG("Skipping non-instant-readout data\n");
+    { 
+      // LOG_DEBUG("Skipping non-instant-readout data\n");
       return;
     }
+    LOG_DEBUG("Handle_type. %s\n", type.c_str());
     handle_victron_instant_readout(device, manufacturer_data.substr(2, -1));
   }
 
@@ -92,7 +88,7 @@ namespace espjoker
       {
         VictronBatteryMonitorData *data = static_cast<VictronBatteryMonitor *>(device)->parse_data(raw_data);
         battery_status->update(data);
-#ifdef DEBUG_DECODE        
+#ifdef DEBUG_DECODE
         LOG_DEBUG("Model: 0x%04x, Readout type 0x%02x\n", data->get_model_id(), data->get_readout_type());
 
         std::string d = data->get_decrypted();
@@ -108,7 +104,6 @@ namespace espjoker
                   data->current,
                   data->soc);
 
-          
         LOG_DEBUG("\n");
 #endif
         delete (data);
@@ -142,12 +137,11 @@ namespace espjoker
 
   void ESPJokerBLEClient::onScanEnd(const NimBLEScanResults &scanResults, int reason)
   {
-    LOG_INFO("onScanEnd: %d BLE Scan Results are in!\n", scanResults.getCount());
+    LOG_INFO("onScanEnd: %d BLE Scan Results\n", scanResults.getCount());
     for (auto &&result : scanResults)
     {
       handle_advertisement(result, "onScanEnd");
     }
-    LOG_INFO("BLE Scan Results: Thats it.\n");
   }
 
   ESPJokerBLEClient::~ESPJokerBLEClient()
