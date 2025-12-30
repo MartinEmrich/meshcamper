@@ -13,13 +13,13 @@
 // mark reports from battery_status that are older than this
 #define REPORT_STALE_THRESHOLD_US 60000000
 
-namespace espjoker
+namespace meshcamper
 {
-    /* ESP Joker - ESP32 and Meshtastic for Club Joker (City)
+    /* Meshcamper - ESP32 and Meshtastic for camper van
      *
      * Main state machine and application */
 
-    class ESPJokerApplication : public MessageHandler
+    class MeshcamperApplication : public MessageHandler
     {
     private:
         std::vector<std::string> tokenize(const std::string &message);
@@ -42,12 +42,12 @@ namespace espjoker
         void send_report();
 
     public:
-        ESPJokerApplication(BatteryStatus *battery_status, MeshtasticClient *meshtastic_client);
+        MeshcamperApplication(BatteryStatus *battery_status, MeshtasticClient *meshtastic_client);
 
         virtual void handle_message(const uint32_t &from, const uint32_t &to, const uint8_t channel, const std::string &message);
 
         void loop();
 
-        virtual ~ESPJokerApplication();
+        virtual ~MeshcamperApplication();
     };
 }

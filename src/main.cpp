@@ -2,19 +2,19 @@
 
 #include "BLE.h"
 #include "MeshtasticClient.h"
-#include "ESPJokerApplication.h"
+#include "MeshcamperApplication.h"
 #include "Logging.h"
 #include "victron/devices/VictronBatteryMonitor.h"
 
 #include "config.h"
 
-espjoker::ESPJokerBLEClient *ble;
+meshcamper::MeshcamperBLEClient *ble;
 
-espjoker::MeshtasticClient *mt;
+meshcamper::MeshtasticClient *mt;
 
-espjoker::BatteryStatus *battery_status;
+meshcamper::BatteryStatus *battery_status;
 
-espjoker::ESPJokerApplication *espjoker_application;
+meshcamper::MeshcamperApplication *meshcamper_application;
 
 uint8_t led = 0;
 
@@ -23,10 +23,10 @@ uint64_t last_info = 0;
 void setup()
 {
   Serial.begin(115200);
-  battery_status = new espjoker::BatteryStatus();
-  ble = new espjoker::ESPJokerBLEClient(battery_status);
-  mt = new espjoker::MeshtasticClient();
-  espjoker_application = new espjoker::ESPJokerApplication(battery_status, mt);
+  battery_status = new meshcamper::BatteryStatus();
+  ble = new meshcamper::MeshcamperBLEClient(battery_status);
+  mt = new meshcamper::MeshtasticClient();
+  meshcamper_application = new meshcamper::MeshcamperApplication(battery_status, mt);
 
   ble->addVictronDevice(new VictronBatteryMonitor(VICTRON_BMV_BLE_MAC, VICTRON_BMV_INSTANT_READOUT_KEY));
 
@@ -42,7 +42,7 @@ void setup()
 /* Most is done in FreeRTOS tasks, only main notifications, a heartbeat LED and serial info here */
 void loop()
 {
-  espjoker_application->loop();
+  meshcamper_application->loop();
 
   digitalWrite(2, 1);
   auto now = millis();

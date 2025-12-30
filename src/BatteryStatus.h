@@ -8,7 +8,7 @@
 #include "Logging.h"
 #include "victron/devices/VictronBatteryMonitor.h"
 
-namespace espjoker
+namespace meshcamper
 {
 
     class BatteryStatus

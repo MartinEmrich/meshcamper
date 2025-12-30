@@ -1,6 +1,6 @@
 #include "MeshtasticClient.h"
 
-namespace espjoker
+namespace meshcamper
 {
     TaskHandle_t mt_task_handle;
 
@@ -10,20 +10,20 @@ namespace espjoker
 
     extern "C"
     {
-        void espjoker_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress)
+        void meshcamper_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress)
         {
             MeshtasticClient::instance->node_report(node, progress);
         }
 
-        void espjoker_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text)
+        void meshcamper_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text)
         {
             LOG_INFO("MMM <<< Got text from 0x%08x: \"%s\"\n\n", from, text);
             MeshtasticClient::instance->handle_message(from, to, channel, text);
         }
 
-        void espjoker_mt_task(void *ptr)
+        void meshcamper_mt_task(void *ptr)
         {
-            static_cast<espjoker::MeshtasticClient *>(ptr)->task();
+            static_cast<meshcamper::MeshtasticClient *>(ptr)->task();
         }
     }
 
@@ -40,16 +40,16 @@ namespace espjoker
     void MeshtasticClient::init()
     {
         mt_serial_init(SERIAL_RX, SERIAL_TX, BAUDRATE);
-        set_text_message_callback(espjoker_mt_text_cb);
+        set_text_message_callback(meshcamper_mt_text_cb);
         LOG_INFO("Meshtastic initialized.");
-        bool rv = mt_request_node_report(espjoker_mt_connected_cb);
+        bool rv = mt_request_node_report(meshcamper_mt_connected_cb);
         LOG_INFO("Initial node report result: %d\n", rv);
     }
 
     void MeshtasticClient::start()
     {
         LOG_INFO("Starting MT Task\n");
-        xTaskCreate(espjoker_mt_task, "Meshtastic Task", 8192, this, 1, &mt_task_handle);
+        xTaskCreate(meshcamper_mt_task, "Meshtastic Task", 8192, this, 1, &mt_task_handle);
     }
 
     void MeshtasticClient::task()
@@ -79,7 +79,7 @@ namespace espjoker
             // regulartly refresh node report.
             if (millis() - last_nr_time > 60000)
             {
-                bool rv = mt_request_node_report(espjoker_mt_connected_cb);
+                bool rv = mt_request_node_report(meshcamper_mt_connected_cb);
                 LOG_INFO("refreshed node report result: %d\n", rv);
                 if (!rv)
                 {

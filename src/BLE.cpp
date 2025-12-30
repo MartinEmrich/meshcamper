@@ -1,23 +1,23 @@
 #include "BLE.h"
-namespace espjoker
+namespace meshcamper
 {
 
   extern "C"
   {
-    void espjoker_ble_task(void *ptr)
+    void meshcamper_ble_task(void *ptr)
     {
-      static_cast<espjoker::ESPJokerBLEClient *>(ptr)->task();
+      static_cast<meshcamper::MeshcamperBLEClient *>(ptr)->task();
     }
   }
 
   TaskHandle_t ble_task_handle;
 
-  ESPJokerBLEClient::ESPJokerBLEClient(BatteryStatus *b) : battery_status(b)
+  MeshcamperBLEClient::MeshcamperBLEClient(BatteryStatus *b) : battery_status(b)
   {
-    BLEDevice::init("esp-joker");
+    BLEDevice::init("meshcamper");
   }
 
-  void ESPJokerBLEClient::start()
+  void MeshcamperBLEClient::start()
   {
     scanner = BLEDevice::getScan();
 
@@ -30,16 +30,16 @@ namespace espjoker
     scanner->setWindow(490);
 
     LOG_INFO("Looking for %d devices...", devices.size());
-    xTaskCreate(espjoker_ble_task, "BLE Task", 2048, this, 1, &ble_task_handle);
+    xTaskCreate(meshcamper_ble_task, "BLE Task", 2048, this, 1, &ble_task_handle);
     LOG_INFO("Task created.\n");
   }
 
-  void ESPJokerBLEClient::addVictronDevice(VictronDevice *device)
+  void MeshcamperBLEClient::addVictronDevice(VictronDevice *device)
   {
     devices.push_back(device);
   }
 
-  void ESPJokerBLEClient::task()
+  void MeshcamperBLEClient::task()
   {
     LOG_INFO("BLE Task started\n");
     while (true)
@@ -51,7 +51,7 @@ namespace espjoker
     vTaskDelete(NULL);
   }
 
-  void ESPJokerBLEClient::handle_advertisement(const NimBLEAdvertisedDevice *advertisedDevice, const std::string &type)
+  void MeshcamperBLEClient::handle_advertisement(const NimBLEAdvertisedDevice *advertisedDevice, const std::string &type)
   {
     VictronDevice *device = NULL;
     for (auto &&d : devices)
@@ -80,7 +80,7 @@ namespace espjoker
     handle_victron_instant_readout(device, manufacturer_data.substr(2, -1));
   }
 
-  void ESPJokerBLEClient::handle_victron_instant_readout(VictronDevice *device, const std::string &raw_data)
+  void MeshcamperBLEClient::handle_victron_instant_readout(VictronDevice *device, const std::string &raw_data)
   {
     try
     {
@@ -128,17 +128,17 @@ namespace espjoker
 
   /* BLE Scan callbacks */
 
-  void ESPJokerBLEClient::onResult(const NimBLEAdvertisedDevice *advertisedDevice)
+  void MeshcamperBLEClient::onResult(const NimBLEAdvertisedDevice *advertisedDevice)
   {
     //handle_advertisement(advertisedDevice, "onResult");
   }
 
-  void ESPJokerBLEClient::onDiscovered(const NimBLEAdvertisedDevice *advertisedDevice)
+  void MeshcamperBLEClient::onDiscovered(const NimBLEAdvertisedDevice *advertisedDevice)
   {
     //handle_advertisement(advertisedDevice, "onDiscovered");
   }
 
-  void ESPJokerBLEClient::onScanEnd(const NimBLEScanResults &scanResults, int reason)
+  void MeshcamperBLEClient::onScanEnd(const NimBLEScanResults &scanResults, int reason)
   {
     LOG_INFO("onScanEnd: %d BLE Scan Results\n", scanResults.getCount());
     for (auto &&result : scanResults)
@@ -147,7 +147,7 @@ namespace espjoker
     }
   }
 
-  ESPJokerBLEClient::~ESPJokerBLEClient()
+  MeshcamperBLEClient::~MeshcamperBLEClient()
   {
   }
 }

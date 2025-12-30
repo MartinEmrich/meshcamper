@@ -13,20 +13,20 @@
 #include "BatteryStatus.h"
 #include "victron/devices/VictronBatteryMonitor.h"
 
-namespace espjoker
+namespace meshcamper
 {
   extern "C"
   {
-    void espjoker_ble_task(void *ptr);
+    void meshcamper_ble_task(void *ptr);
   }
 
   /* Bluetooth LE Client/Scanner, captures
      Victron BMV-712 instant readout data.
      */
-  class ESPJokerBLEClient : public NimBLEScanCallbacks
+  class MeshcamperBLEClient : public NimBLEScanCallbacks
   {
     /* freertos tas glue function */
-    friend void espjoker_ble_task(void *ptr);
+    friend void meshcamper_ble_task(void *ptr);
 
     virtual void onResult(const NimBLEAdvertisedDevice *advertisedDevice);
     virtual void onDiscovered(const NimBLEAdvertisedDevice *advertisedDevice);
@@ -46,14 +46,14 @@ namespace espjoker
     void handle_victron_instant_readout(VictronDevice* device, const std::string &raw_data);
 
   public:
-    ESPJokerBLEClient(BatteryStatus* b);
+    MeshcamperBLEClient(BatteryStatus* b);
 
     /* start FreeRTOS BLE Scanner thread. should never return.*/
     void start();
 
     void addVictronDevice(VictronDevice* device);
 
-    virtual ~ESPJokerBLEClient();
+    virtual ~MeshcamperBLEClient();
   };
 
 }

@@ -1,15 +1,15 @@
-#include "ESPJokerApplication.h"
+#include "MeshcamperApplication.h"
 
-namespace espjoker
+namespace meshcamper
 {
 
-    ESPJokerApplication::ESPJokerApplication(BatteryStatus *_battery_status, MeshtasticClient *_meshtastic_client) : battery_status(_battery_status), meshtastic_client(_meshtastic_client)
+    MeshcamperApplication::MeshcamperApplication(BatteryStatus *_battery_status, MeshtasticClient *_meshtastic_client) : battery_status(_battery_status), meshtastic_client(_meshtastic_client)
     {
         meshtastic_client->register_handler(this);
     }
 
     std::vector<std::string>
-    ESPJokerApplication::tokenize(const std::string &message)
+    MeshcamperApplication::tokenize(const std::string &message)
     {
         std::vector<std::string> tokens;
 
@@ -40,7 +40,7 @@ namespace espjoker
         return tokens;
     }
 
-    void ESPJokerApplication::handle_message(const uint32_t &from, const uint32_t &to, const uint8_t channel, const std::string &message)
+    void MeshcamperApplication::handle_message(const uint32_t &from, const uint32_t &to, const uint8_t channel, const std::string &message)
     {
         if (to == BROADCAST_ADDR && channel != 0)
         {
@@ -100,17 +100,17 @@ namespace espjoker
         }
     }
 
-    std::string ESPJokerApplication::handle_battery_command(const std::vector<std::string> tokens)
+    std::string MeshcamperApplication::handle_battery_command(const std::vector<std::string> tokens)
     {
         return battery_status->get_as_short_string();
     }
 
-    std::string ESPJokerApplication::handle_heater_command(const std::vector<std::string> token)
+    std::string MeshcamperApplication::handle_heater_command(const std::vector<std::string> token)
     {
         return "Heater control not yet implemented.";
     }
 
-    std::string ESPJokerApplication::handle_report_command(const std::vector<std::string> token)
+    std::string MeshcamperApplication::handle_report_command(const std::vector<std::string> token)
     {
         if (token.size() > 0 && token[0].size() > 0)
         {
@@ -139,7 +139,7 @@ namespace espjoker
         return std::string(report_enabled ? "Report enabled." : "Report disabled.");
     }
 
-    void ESPJokerApplication::loop()
+    void MeshcamperApplication::loop()
     {
         if (report_enabled)
         {
@@ -158,7 +158,7 @@ namespace espjoker
         }
     }
 
-    void ESPJokerApplication::send_report()
+    void MeshcamperApplication::send_report()
     {
         char *report;
         asprintf(&report, "B%.0f%%S%2.1fV%s",
@@ -169,7 +169,7 @@ namespace espjoker
         free(report);
     }
 
-    ESPJokerApplication::~ESPJokerApplication()
+    MeshcamperApplication::~MeshcamperApplication()
     {
     }
 }

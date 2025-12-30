@@ -1,6 +1,6 @@
 #include "BatteryStatus.h"
 
-namespace espjoker
+namespace meshcamper
 {
 
     BatteryStatus::BatteryStatus()

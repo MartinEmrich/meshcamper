@@ -1,23 +1,20 @@
-# ESP Joker*
-(*working title)
+# Meshcamper
 
-ESP32 Meshtastic interface for Club Joker
+Meshtastic interface for camper van/RV.
 
 ## Goal
 
-Access and control RV* tech via Meshtastic
-
-(* Westfalia Club Joker camper van)
+Access and control tech via Meshtastic
 
 ## Devices
 
-Supported and planned devices
+Supported and planned devices and features:
 
 * Victron BLE devices
  * Victron BMV-712 battery monitor (/)
 * Indoor climate sensor (x)
 * Westfalia/Paragon control panel (x)
- * Control diesel heater
+ * Control diesel heater (x)
 
 ## Setup
 

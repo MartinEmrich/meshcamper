@@ -11,13 +11,13 @@
 
 #define BAUDRATE 9600
 
-namespace espjoker
+namespace meshcamper
 {
     extern "C"
     {
-        void espjoker_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress);
-        void espjoker_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text);
-        void espjoker_mt_task(void *ptr);
+        void meshcamper_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress);
+        void meshcamper_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text);
+        void meshcamper_mt_task(void *ptr);
     }
 
     class MessageHandler
@@ -62,9 +62,9 @@ namespace espjoker
         bool connected = false;
 
         /* freertos task glue function */
-        friend void espjoker_mt_task(void *ptr);
-        friend void espjoker_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress);
-        friend void espjoker_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text);
+        friend void meshcamper_mt_task(void *ptr);
+        friend void meshcamper_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress);
+        friend void meshcamper_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text);
 
         /* (re)initialize meshtastic serial connection */
         void init();
