@@ -4,11 +4,15 @@ Meshtastic interface for camper van/RV.
 
 ## Goal
 
-Access and control tech via Meshtastic
+Access and control campervan tech via Meshtastic, like battery state, climate, heater or fridge.
+
+* Turn on diesel heater when almost back from your hike
+* Check if the ice cream in the fridge still survived
+* Watch charging/discharging the leisure battery
 
 ## Devices
 
-Supported and planned devices and features:
+Currently supported and planned devices:
 
 * Victron BLE devices
  * Victron BMV-712 battery monitor (/)
@@ -56,21 +60,21 @@ so connecting ground and 5V pins does the trick.
  * "Protobufs" mode
  * Save. Device does reboot.
 
- Done.
+Done.
 
- ## Usage
+## Usage
 
- Don't use the phone via BLE simultaneously, it conflicts with the serial connection.
+Don't use the phone via BLE simultaneously, it conflicts with the serial connection.
 
- Send a text message from a configured trusted device.
+Send a text message from a configured trusted device.
 
- ### Commands
+### Commands
 
- Format is always `<command word> <module> <parameters>`. In the examples below, let's use `bus`.
- Commands are case-insensitive.
+Format is always `<command word> <module> <parameters>`. In the examples below, let's use `bus`.
+Commands are case-insensitive.
 
- #### Battery (`b`)
- Get Information from the Victron battery monitor:
+#### Battery (`b`)
+Get Information from the Victron battery monitor:
 
 Send: `bus b`
 Response:
