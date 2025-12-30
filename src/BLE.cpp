@@ -25,7 +25,7 @@ namespace espjoker
 
     // seems to be sufficient for Victron BLE devices
     scanner->setActiveScan(false);
-    
+
     scanner->setInterval(500);
     scanner->setWindow(490);
 
@@ -45,7 +45,7 @@ namespace espjoker
     while (true)
     {
       bool rv = scanner->start(1000, false);
-      LOG_DEBUG("Task mem watermark: %d bytes. Scanning again in 5s\n", uxTaskGetStackHighWaterMark(ble_task_handle));
+      //LOG_DEBUG("Task mem watermark: %d bytes. Scanning again in 5s\n", uxTaskGetStackHighWaterMark(ble_task_handle));
       delay(5000);
     }
     vTaskDelete(NULL);
@@ -130,12 +130,12 @@ namespace espjoker
 
   void ESPJokerBLEClient::onResult(const NimBLEAdvertisedDevice *advertisedDevice)
   {
-    handle_advertisement(advertisedDevice, "onResult");
+    //handle_advertisement(advertisedDevice, "onResult");
   }
 
   void ESPJokerBLEClient::onDiscovered(const NimBLEAdvertisedDevice *advertisedDevice)
   {
-    handle_advertisement(advertisedDevice, "onDiscovered");
+    //handle_advertisement(advertisedDevice, "onDiscovered");
   }
 
   void ESPJokerBLEClient::onScanEnd(const NimBLEScanResults &scanResults, int reason)

@@ -36,6 +36,14 @@ namespace espjoker
 
         const bool is_ready() const;
 
+        const float get_soc() const;
+
+        const float get_battery_voltage() const;
+
+        const float get_starter_voltage() const;
+
+        const uint32_t get_age_ms() const;
+
         virtual ~BatteryStatus();
     };
 }

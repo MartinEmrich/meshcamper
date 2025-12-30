@@ -39,9 +39,11 @@ void setup()
   pinMode(2, OUTPUT);
 }
 
-/* Most is done in FreeRTOS tasks, only a heartbeat LED and serial info here */
+/* Most is done in FreeRTOS tasks, only main notifications, a heartbeat LED and serial info here */
 void loop()
 {
+  espjoker_application->loop();
+
   digitalWrite(2, 1);
   auto now = millis();
   if ((now - last_info) > 30000 && battery_status->is_ready())
@@ -51,5 +53,5 @@ void loop()
   }
   delay(1000);
   digitalWrite(2, 0);
-  delay(10000);
+  delay(1000);
 }
