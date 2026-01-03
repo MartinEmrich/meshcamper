@@ -57,7 +57,7 @@ public:
      */
     virtual VictronBatteryMonitorData *parse_data(const std::string &raw_data);
 
-    virtual const victron_device_class_t get_device_class() const;
+    virtual victron_device_class_t get_device_class() const;
 
     virtual ~VictronBatteryMonitor();
 };

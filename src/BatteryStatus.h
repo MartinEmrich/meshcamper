@@ -30,21 +30,21 @@ namespace meshcamper
     public:
         BatteryStatus();
 
-        void update(VictronBatteryMonitorData* data);
+        void update(VictronBatteryMonitorData *data);
 
         std::string get_as_short_string() const;
 
-        const bool is_ready() const;
+        bool is_ready() const;
 
-        const float get_soc() const;
+        float get_soc() const;
 
-        const float get_power() const;
+        float get_power() const;
 
-        const float get_battery_voltage() const;
+        float get_battery_voltage() const;
 
-        const float get_starter_voltage() const;
+        float get_starter_voltage() const;
 
-        const uint32_t get_age_ms() const;
+        uint32_t get_age_ms() const;
 
         virtual ~BatteryStatus();
     };

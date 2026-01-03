@@ -29,7 +29,7 @@ public:
      */
     virtual VictronData *parse_data(const std::string &raw_data) = 0;
 
-    virtual const victron_device_class_t get_device_class() const = 0;
+    virtual victron_device_class_t get_device_class() const = 0;
 
     virtual ~VictronDevice();
 };

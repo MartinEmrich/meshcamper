@@ -5,7 +5,7 @@ VictronBatteryMonitor::VictronBatteryMonitor(const std::string &mac_address_hex_
 {
 }
 
-const victron_device_class_t VictronBatteryMonitor::get_device_class() const
+victron_device_class_t VictronBatteryMonitor::get_device_class() const
 {
     return VICTRON_DEVICE_CLASS_BATTERYMONITOR;
 }

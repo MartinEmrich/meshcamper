@@ -29,32 +29,32 @@ namespace meshcamper
         return std::string(buf);
     }
 
-    const bool BatteryStatus::is_ready() const
+    bool BatteryStatus::is_ready() const
     {
         return (battery_voltage != 0.0f || starter_voltage != 0.0f);
     }
 
-    const float BatteryStatus::get_soc() const
+    float BatteryStatus::get_soc() const
     {
         return soc;
     }
 
-    const float BatteryStatus::get_power() const
+    float BatteryStatus::get_power() const
     {
         return power;
     }
 
-    const float BatteryStatus::get_battery_voltage() const
+    float BatteryStatus::get_battery_voltage() const
     {
         return battery_voltage;
     }
 
-    const float BatteryStatus::get_starter_voltage() const
+    float BatteryStatus::get_starter_voltage() const
     {
         return starter_voltage;
     }
 
-    const uint32_t BatteryStatus::get_age_ms() const
+    uint32_t BatteryStatus::get_age_ms() const
     {
         return (esp_timer_get_time() - update_timestamp);
     }
