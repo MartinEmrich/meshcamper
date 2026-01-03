@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "BLE.h"
 #include "MeshtasticClient.h"
@@ -23,6 +24,8 @@ uint64_t last_info = 0;
 void setup()
 {
   Serial.begin(115200);
+  Wire.begin();
+
   battery_status = new meshcamper::BatteryStatus();
   ble = new meshcamper::MeshcamperBLEClient(battery_status);
   mt = new meshcamper::MeshtasticClient();
@@ -42,16 +45,15 @@ void setup()
 /* Most is done in FreeRTOS tasks, only main notifications, a heartbeat LED and serial info here */
 void loop()
 {
+  digitalWrite(2, 1); // light on: loop is running.
   meshcamper_application->loop();
 
-  digitalWrite(2, 1);
   auto now = millis();
   if ((now - last_info) > 30000 && battery_status->is_ready())
   {
     Serial.println(battery_status->get_as_short_string().c_str());
     last_info = now;
   }
-  delay(1000);
-  digitalWrite(2, 0);
+  digitalWrite(2, 0); // light off: loop finished and sleeping.
   delay(1000);
 }

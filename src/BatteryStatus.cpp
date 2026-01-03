@@ -39,6 +39,11 @@ namespace meshcamper
         return soc;
     }
 
+    const float BatteryStatus::get_power() const
+    {
+        return power;
+    }
+
     const float BatteryStatus::get_battery_voltage() const
     {
         return battery_voltage;

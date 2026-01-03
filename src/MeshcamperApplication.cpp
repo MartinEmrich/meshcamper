@@ -6,6 +6,7 @@ namespace meshcamper
     MeshcamperApplication::MeshcamperApplication(BatteryStatus *_battery_status, MeshtasticClient *_meshtastic_client) : battery_status(_battery_status), meshtastic_client(_meshtastic_client)
     {
         meshtastic_client->register_handler(this);
+        display = Display::create();
     }
 
     std::vector<std::string>
@@ -123,9 +124,11 @@ namespace meshcamper
             case '1':
             case 'y':
                 report_enabled = true;
-                if (token.size() > 1 && token[1].size() > 0) {
+                if (token.size() > 1 && token[1].size() > 0)
+                {
                     int64_t new_int = std::stoll(token[1]);
-                    if (new_int < 5 || new_int > 3600) {
+                    if (new_int < 5 || new_int > 3600)
+                    {
                         return "Interval out of range";
                     }
                     report_interval_seconds = new_int;
@@ -135,7 +138,7 @@ namespace meshcamper
         }
         else // no arg? just toggle
             report_enabled = !report_enabled;
-            
+
         return std::string(report_enabled ? "Report enabled." : "Report disabled.");
     }
 
@@ -152,6 +155,9 @@ namespace meshcamper
                 last_report_sent_time = esp_timer_get_time();
             }
         }
+        display->update_battery_status(battery_status->get_soc(), battery_status->get_power());
+        display->redraw();
+        delay(500);
     }
 
     void MeshcamperApplication::send_report()
@@ -167,5 +173,6 @@ namespace meshcamper
 
     MeshcamperApplication::~MeshcamperApplication()
     {
+        delete display;
     }
 }

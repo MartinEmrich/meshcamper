@@ -17,12 +17,28 @@ Currently supported and planned devices:
 * Victron BLE devices
  * Victron BMV-712 battery monitor (/)
 * Indoor climate sensor (x)
+* Small OLED display module (WIP)
 * Westfalia/Paragon control panel (x)
  * Control diesel heater (x)
 
 ## Setup
 
-### Build
+### Build (Hardware)
+
+Parts:
+* ESP32 Dev board v1 (clone)
+* SH1106 I2C OLED display module (128x64, 1.3")
+
+Pinout:
+* D16: Serial RX (to serial TX of Meshtastic device)
+* D17: Serial TX (to serial RX of Meshtastic device)
+* D21: I2C SDA (Display)
+* D22: I2C SCL (Display)
+* 3V3: Connect to display and sensor VCC
+* GND: connect to GND of all peripherals
+* VIN: (5V) Connect to 5V power source and 5V of Meshtastic device
+
+### Build (software)
 
 Install Pioarduino (or PlatformIO).
 
@@ -49,7 +65,7 @@ RX pin is Pin 16, TX pin is Pin 17. Connect them (**crossed**) to your designate
 Meshtastic device. Also connect common ground.
 
 Usually both the ESP32 board running this and the Meshtastic device can be fed from the same 5V source (USB,...),
-so connecting ground and 5V pins does the trick.
+so connecting ground and 5V pins does the trick. Provide quality wire gauge, as Meshtastic devices draw over 1A during TX.
 
 ### Configure Meshtastic
 

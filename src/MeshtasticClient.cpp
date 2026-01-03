@@ -83,7 +83,7 @@ namespace meshcamper
             // (receive) loop run
             auto before = millis();
             can_send = mt_loop(millis());
-            LOG_DEBUG("mt_look took %d ms\n", millis() - before);
+            //LOG_DEBUG("mt_loop took %d ms\n", millis() - before);
 
             // Send loop run
             if (can_send)

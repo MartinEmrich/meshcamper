@@ -3,6 +3,7 @@
 #include "Logging.h"
 #include "MeshtasticClient.h"
 #include "BatteryStatus.h"
+#include "display/Display.h"
 
 #include <string>
 #include <vector>
@@ -27,6 +28,8 @@ namespace meshcamper
         BatteryStatus *battery_status;
 
         MeshtasticClient *meshtastic_client;
+
+        Display* display;
 
         /* optional, regular short status report */
         bool report_enabled = false;

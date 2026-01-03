@@ -38,6 +38,8 @@ namespace meshcamper
 
         const float get_soc() const;
 
+        const float get_power() const;
+
         const float get_battery_voltage() const;
 
         const float get_starter_voltage() const;
