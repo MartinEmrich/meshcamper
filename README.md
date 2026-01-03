@@ -34,7 +34,7 @@ create a file `src/config.h` with your config:
 
 #define COMMAND_WORD "camp"
 
-// list of devices allowed to interact, finish with 0x0
+// optional: list of devices allowed to interact, finish with 0x0
 #define OWN_DEVICES { 0x123445678, 0xabcdef01, 0x0 }
 ```
 
@@ -66,7 +66,7 @@ Done.
 
 Don't use the phone via BLE simultaneously, it conflicts with the serial connection.
 
-Send a text message from a configured trusted device.
+Send a text message from a favorited or configured trusted device.
 
 ### Commands
 

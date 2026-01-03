@@ -1,12 +1,17 @@
 #include "MeshtasticClient.h"
 
+#define DEVICE_CONTACT() last_device_contact = millis();
+
 namespace meshcamper
 {
     TaskHandle_t mt_task_handle;
 
     MeshtasticClient *MeshtasticClient::instance = NULL;
 
+/* @deprecated */
+#ifdef OWN_DEVICES
     const uint32_t MeshtasticClient::own_devices[] = OWN_DEVICES;
+#endif
 
     extern "C"
     {
@@ -34,16 +39,30 @@ namespace meshcamper
     {
         instance = this;
         send_q = xQueueCreate(8, sizeof(MeshtasticClient::SendQueueElement *));
+/* @deprecated */
+#ifdef OWN_DEVICES
+        const uint32_t own_devices[] = OWN_DEVICES;
+        int i = 0;
+        while (own_devices[i] != 0)
+        {
+            trusted_nodes.insert(own_devices[i++]);
+        }
+#endif
         init();
     }
 
     void MeshtasticClient::init()
     {
+        connected = false;
         mt_serial_init(SERIAL_RX, SERIAL_TX, BAUDRATE);
         set_text_message_callback(meshcamper_mt_text_cb);
         LOG_INFO("Meshtastic initialized.");
         bool rv = mt_request_node_report(meshcamper_mt_connected_cb);
         LOG_INFO("Initial node report result: %d\n", rv);
+        if (rv)
+        {
+            DEVICE_CONTACT();
+        }
     }
 
     void MeshtasticClient::start()
@@ -54,31 +73,41 @@ namespace meshcamper
 
     void MeshtasticClient::task()
     {
-        unsigned long last_nr_time = 0;
         LOG_INFO("Meshtastic task started.\n");
         while (true)
         {
+            //LOG_DEBUG("Last device contact %d ms ago.", last_device_contact_time());
+            //LOG_DEBUG("%d trusted nodes", trusted_nodes.size());
+            //LOG_DEBUG("Connected: %s.\n", connected ? "Y" : "N");
+
             // (receive) loop run
+            auto before = millis();
             can_send = mt_loop(millis());
+            LOG_DEBUG("mt_look took %d ms\n", millis() - before);
 
             // Send loop run
             if (can_send)
             {
                 SendQueueElement *msg;
-                while (pdTRUE == xQueueReceive(send_q, &msg, portTICK_PERIOD_MS * 1000))
+                while (pdTRUE == xQueueReceive(send_q, &msg, 0))
                 {
                     assert(msg != NULL);
                     bool rv = mt_send_text(msg->msg->c_str(), msg->to, msg->ch);
                     LOG_INFO("MMM >>> Sent. result: %s\n", rv ? "true" : "false");
                     delete (msg);
+                    DEVICE_CONTACT();
                 }
             }
             else
-                LOG_ERROR("MT connection not ready to send!");
+            {
+                LOG_ERROR("MT connection not ready to send!\n");
+            }
 
             // regulartly refresh node report.
-            if (millis() - last_nr_time > 60000)
+            if ((millis() - last_nr_time) > 60000 && connected)
             {
+                LOG_DEBUG("Node report %d ago\n", millis() - last_nr_time);
+                connected = false; // suspend until node report fully received.
                 bool rv = mt_request_node_report(meshcamper_mt_connected_cb);
                 LOG_INFO("refreshed node report result: %d\n", rv);
                 if (!rv)
@@ -86,12 +115,17 @@ namespace meshcamper
                     LOG_WARN("Node report request unsuccessful, reinitializing Meshtastic lib.");
                     init();
                 }
-
-                last_nr_time = millis();
+            }
+            if (last_device_contact_time() > 120000)
+            {
+                LOG_WARN("No device contact in 2min, reinitializing.\n");
+                init();
             }
 
-            // It sends a heartbeat to the device every 60s, so 1s is more than sufficient.
-            delay(1000);
+            if (connected)
+            {
+                delay(500);
+            }
         }
     }
 
@@ -104,18 +138,32 @@ namespace meshcamper
     {
         if (progress == MT_NR_IN_PROGRESS)
         {
+            connected = false; // skip delay in loop to consume data quickly.
             LOG_INFO("Got node report for 0x%08x\n", node->node_num);
-            // connected = true;
             if (node->is_mine)
             {
                 LOG_INFO("Found mine: 0x%08x\n", node->node_num);
                 own_address = node->node_num;
+            }
+            else if (node->is_favorite)
+            {
+                LOG_INFO("Found trusted node: 0x%08x\n", node->node_num);
+                trusted_nodes.insert(node->node_num);
+            }
+            else
+            {
+                LOG_DEBUG("Other node: 0x%08x\n", node->node_num);
             }
         }
         else if (progress == MT_NR_DONE)
         {
             LOG_INFO("Node report is done, assuming meshtastic device is up!\n");
             connected = true;
+            last_nr_time = millis();
+            for (auto &&favorite : trusted_nodes)
+            {
+                LOG_INFO("Trusted favorite: 0x%08x\n", favorite);
+            }
         }
         else if (progress == MT_NR_INVALID)
         {
@@ -128,16 +176,11 @@ namespace meshcamper
         if (channel != 0)
             return; // ignore messages for non-primary channel.
 
-        int i = 0;
-        while (own_devices[i] != 0)
+        if (!trusted_nodes.contains(from))
         {
-            if (own_devices[i] == from)
-            {
-                break;
-            }
-        }
-        if (own_devices[i] == 0) // sender not found in OWN_DEVICES, ignore.
+            LOG_INFO("Ignoring message from untrusted node 0x%08x\n", from);
             return;
+        }
 
         if (to != own_address && to != BROADCAST_ADDR)
         {
@@ -163,6 +206,11 @@ namespace meshcamper
     MeshtasticClient::SendQueueElement::SendQueueElement(const uint32_t &to, const uint8_t &ch, const std::string &msg)
         : to(to), ch(ch), msg(new std::string(msg))
     {
+    }
+
+    uint64_t MeshtasticClient::last_device_contact_time()
+    {
+        return (millis() - last_device_contact);
     }
 
     MeshtasticClient::SendQueueElement::~SendQueueElement()

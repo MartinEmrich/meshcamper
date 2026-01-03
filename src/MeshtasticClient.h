@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include "Meshtastic.h"
 #include <string>
+#include <set>
 
 #define SERIAL_RX 16
 #define SERIAL_TX 17
@@ -46,6 +47,8 @@ namespace meshcamper
 
         static MeshtasticClient *instance;
 
+        std::set<uint32_t> trusted_nodes;
+
         /* Array of device numbers allowed to contact us.
          * TODO: Use favourited nodes from node_report for that!
          */
@@ -53,6 +56,10 @@ namespace meshcamper
 
         // Our MT address/node num, learned from node report.
         uint32_t own_address = 0;
+
+        unsigned long last_nr_time = 0;
+
+        unsigned long last_device_contact = 0;
 
         QueueHandle_t send_q = NULL;
 
@@ -65,6 +72,8 @@ namespace meshcamper
         friend void meshcamper_mt_task(void *ptr);
         friend void meshcamper_mt_connected_cb(mt_node_t *node, mt_nr_progress_t progress);
         friend void meshcamper_mt_text_cb(uint32_t from, uint32_t to, uint8_t channel, const char *text);
+
+        uint64_t last_device_contact_time();
 
         /* (re)initialize meshtastic serial connection */
         void init();

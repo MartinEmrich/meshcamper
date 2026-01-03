@@ -76,7 +76,6 @@ namespace meshcamper
       // LOG_DEBUG("Skipping non-instant-readout data\n");
       return;
     }
-    LOG_DEBUG("Handle_type. %s\n", type.c_str());
     handle_victron_instant_readout(device, manufacturer_data.substr(2, -1));
   }
 
@@ -140,7 +139,7 @@ namespace meshcamper
 
   void MeshcamperBLEClient::onScanEnd(const NimBLEScanResults &scanResults, int reason)
   {
-    LOG_INFO("onScanEnd: %d BLE Scan Results\n", scanResults.getCount());
+    //LOG_DEBUG("onScanEnd: %d BLE Scan Results\n", scanResults.getCount());
     for (auto &&result : scanResults)
     {
       handle_advertisement(result, "onScanEnd");

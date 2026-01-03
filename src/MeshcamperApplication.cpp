@@ -152,10 +152,6 @@ namespace meshcamper
                 last_report_sent_time = esp_timer_get_time();
             }
         }
-        else
-        {
-            LOG_DEBUG("Report disabled.\n");
-        }
     }
 
     void MeshcamperApplication::send_report()
