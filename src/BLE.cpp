@@ -14,11 +14,14 @@ namespace meshcamper
 
   MeshcamperBLEClient::MeshcamperBLEClient(BatteryStatus *b) : battery_status(b)
   {
-    BLEDevice::init("meshcamper");
   }
 
-  void MeshcamperBLEClient::start()
+  void MeshcamperBLEClient::init_nimble_scanner()
   {
+    // included in init(): esp_bt_controller_enable(ESP_BT_MODE_BLE);
+
+    BLEDevice::init("meshcamper");
+
     scanner = BLEDevice::getScan();
 
     scanner->setScanCallbacks(this);
@@ -28,6 +31,16 @@ namespace meshcamper
 
     scanner->setInterval(500);
     scanner->setWindow(490);
+  }
+
+  void MeshcamperBLEClient::deinit_nimble_scanner()
+  {
+    BLEDevice::deinit();
+    // apparently included in deinit(): esp_bt_controller_disable();
+  }
+
+  void MeshcamperBLEClient::start()
+  {
 
     LOG_INFO("Looking for %d devices...", devices.size());
     xTaskCreate(meshcamper_ble_task, "BLE Task", 2048, this, 1, &ble_task_handle);
@@ -44,9 +57,20 @@ namespace meshcamper
     LOG_INFO("BLE Task started\n");
     while (true)
     {
-      bool rv = scanner->start(1000, false);
-      //LOG_DEBUG("Task mem watermark: %d bytes. Scanning again in 5s\n", uxTaskGetStackHighWaterMark(ble_task_handle));
+      LOG_INFO("Initializing BLE\n");
+
+      init_nimble_scanner();
+      LOG_INFO("Initialized, scanning for 4-5s...\n");
+
+      bool rv = scanner->start(4000, false);
       delay(5000);
+      LOG_INFO("Scanning returned, turning off ble.\n");
+
+      // LOG_DEBUG("Task mem watermark: %d bytes. Scanning again in 5s\n", uxTaskGetStackHighWaterMark(ble_task_handle));
+      deinit_nimble_scanner();
+      LOG_INFO("BLE deinitialized, sleeping for 15s...\n");
+
+      delay(15000);
     }
     vTaskDelete(NULL);
   }
@@ -72,7 +96,7 @@ namespace meshcamper
     }
 
     if (manufacturer_data[2] != 0x10)
-    { 
+    {
       // LOG_DEBUG("Skipping non-instant-readout data\n");
       return;
     }
@@ -129,17 +153,17 @@ namespace meshcamper
 
   void MeshcamperBLEClient::onResult(const NimBLEAdvertisedDevice *advertisedDevice)
   {
-    //handle_advertisement(advertisedDevice, "onResult");
+    // handle_advertisement(advertisedDevice, "onResult");
   }
 
   void MeshcamperBLEClient::onDiscovered(const NimBLEAdvertisedDevice *advertisedDevice)
   {
-    //handle_advertisement(advertisedDevice, "onDiscovered");
+    // handle_advertisement(advertisedDevice, "onDiscovered");
   }
 
   void MeshcamperBLEClient::onScanEnd(const NimBLEScanResults &scanResults, int reason)
   {
-    //LOG_DEBUG("onScanEnd: %d BLE Scan Results\n", scanResults.getCount());
+    // LOG_DEBUG("onScanEnd: %d BLE Scan Results\n", scanResults.getCount());
     for (auto &&result : scanResults)
     {
       handle_advertisement(result, "onScanEnd");

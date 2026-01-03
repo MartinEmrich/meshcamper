@@ -6,6 +6,8 @@
 #include "NimBLEScan.h"
 #include "NimBLEAddress.h"
 
+#include <esp_bt.h>
+
 #include "Arduino.h"
 
 #include "Logging.h"
@@ -38,6 +40,10 @@ namespace meshcamper
     BatteryStatus* battery_status;
     
     NimBLEScan *scanner;
+
+    void init_nimble_scanner();
+
+    void deinit_nimble_scanner();
 
     void task();
 
