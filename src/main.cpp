@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#include <esp_pm.h>
+
 #include "BLE.h"
 #include "MeshtasticClient.h"
 #include "MeshcamperApplication.h"
@@ -21,10 +23,24 @@ uint8_t led = 0;
 
 uint64_t last_info = 0;
 
+esp_pm_config_t pm_config;
+
+void configure_pm()
+{
+  pm_config.max_freq_mhz = 80;
+  pm_config.min_freq_mhz = 10; // 10 is minimum.
+  pm_config.light_sleep_enable = true;
+
+  int rv = esp_pm_configure(&pm_config);
+  LOG("Activating PM result: %d", rv);
+}
+
 void setup()
 {
   Serial.begin(115200);
   Wire.begin();
+
+  configure_pm();
 
   battery_status = new meshcamper::BatteryStatus();
   ble = new meshcamper::MeshcamperBLEClient(battery_status);
