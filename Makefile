@@ -12,12 +12,13 @@ monitor:
 	pio run -t monitor
 
 clean:
-	rm -rf .pio/ managed_components/ .dummy/  CMakeLists.txt sdkconfig.*
+	rm -rf .pio/ managed_components/ .dummy/  CMakeLists.txt
 	pio run -t clean
 
-fullclean:
+fullclean: clean
+	rm -rf .pio/ managed_components/ .dummy/  CMakeLists.txt
 	rm -f $(HOME)/.platformio/idf-env.json
-	rm -f $(HOME)/.platformio/packages/framework-arduinoespressif32
-	rm -f $(HOME)/.platformio/packages/framework-arduinoespressif32-libs
-	rm -f $(HOME)/.platformio/platforms/espressif32
+	rm -rf $(HOME)/.platformio/packages/framework-arduinoespressif32
+	rm -rf $(HOME)/.platformio/packages/framework-arduinoespressif32-libs
+	rm -rf $(HOME)/.platformio/platforms/espressif32
 

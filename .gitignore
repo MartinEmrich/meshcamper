@@ -3,3 +3,8 @@
 .vscode/launch.json
 src/config.h
 config.h
+.dummy
+managed_components
+sdkconfig.defaults
+CMakeLists.txt
+dependencies.lock
