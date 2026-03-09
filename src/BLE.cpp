@@ -62,6 +62,8 @@ namespace meshcamper
       init_nimble_scanner();
       LOG_INFO("Initialized, scanning for 4-5s...\n");
 
+      /* TODO: maybe active scanning gets Victron advertisement faster?
+       put a semaphore here to get signalled as soon as battery info is in and cancel scanning... */
       bool rv = scanner->start(4000, false);
       delay(5000);
       LOG_INFO("Scanning returned, turning off ble.\n");

@@ -33,6 +33,12 @@ void configure_pm()
 
   int rv = esp_pm_configure(&pm_config);
   LOG("Activating PM result: %d", rv);
+
+  // always power down radios
+  esp_sleep_pd_config(ESP_PD_DOMAIN_MODEM, ESP_PD_OPTION_OFF);
+
+  // TODO: if UART has issues, try this:
+  //esp_sleep_pd_config(ESP_PD_DOMAIN_VDDSDIO, ESP_PD_OPTION_ON);
 }
 
 void setup()
